@@ -11,7 +11,7 @@
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" >
         <action
-            android:id="@+id/action_detail"
+            android:id="@+id/actionDetail"
             app:destination="@id/detailFragment" />
     </fragment>
     <fragment
@@ -21,7 +21,7 @@
 
         tools:layout="@layout/fragment_detail" >
         <action
-            android:id="@+id/action_detailFragment_to_listFragment"
+            android:id="@+id/actionList"
             app:destination="@id/listFragment" />
         <argument
             android:name="doguuid"

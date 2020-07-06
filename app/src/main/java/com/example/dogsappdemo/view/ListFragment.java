@@ -64,13 +64,14 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+       // ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+      //  Navigation.findNavController(view).navigate(action);
 
-//        Navigation.findNavController(view).navigate((NavDirections) action);
         // create view model
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         viewModel.refresh(); // retrieve the info from view model
 
-        dogsList.setLayoutManager( new LinearLayoutManager(getContext())); // list in linear fashion
+        dogsList.setLayoutManager(new LinearLayoutManager(getContext())); // list in linear fashion
         dogsList.setAdapter(dogsListAdapter);
         refreshLayout.setOnRefreshListener(() -> {
             dogsList.setVisibility(View.GONE);
