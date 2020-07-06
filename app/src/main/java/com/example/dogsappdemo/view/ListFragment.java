@@ -64,8 +64,8 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-       // ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
-      //  Navigation.findNavController(view).navigate(action);
+     //   ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+        //    Navigation.findNavController(view).navigate(action);
 
         // create view model
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
