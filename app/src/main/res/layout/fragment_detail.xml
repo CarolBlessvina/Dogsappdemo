@@ -6,7 +6,7 @@
     tools:context=".view.DetailFragment">
 
  <ImageView
-     android:id="@+id/dogimage"
+     android:id="@+id/dogImage"
      android:layout_width="match_parent"
      android:layout_height="wrap_content"
      android:layout_alignParentTop="true"
@@ -21,7 +21,7 @@
         style="@style/Title"
         android:layout_margin="4dp"
         android:text="Dog Name"
-        android:layout_below="@id/dogimage"
+        android:layout_below="@id/dogImage"
         android:layout_centerHorizontal="true"/>
 
 
