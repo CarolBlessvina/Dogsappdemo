@@ -18,5 +18,15 @@
         android:id="@+id/detailFragment"
         android:name="com.example.dogsappdemo.view.DetailFragment"
         android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" />
+
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_detailFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="doguuid"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+
 </navigation>
