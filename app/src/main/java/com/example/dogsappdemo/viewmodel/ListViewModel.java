@@ -12,6 +12,7 @@ import com.example.dogsappdemo.model.DogBreed;
 import com.example.dogsappdemo.model.DogDao;
 import com.example.dogsappdemo.model.DogDatabase;
 import com.example.dogsappdemo.model.DogsApiService;
+import com.example.dogsappdemo.util.SharedPreferencesHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class ListViewModel extends AndroidViewModel {
     private CompositeDisposable disposable = new CompositeDisposable();
     private AsyncTask<List<DogBreed>,Void, List<DogBreed>> insertTask;
     private AsyncTask<Void,Void, List<DogBreed>> retrieveTask;
+    private SharedPreferencesHelper prefHelper = SharedPreferencesHelper.getInstance(getApplication());
+    private long refreshTime = 5 * 60 * 1000 * 1000 * 1000L;
 
     public ListViewModel(@NonNull Application application) {
         super(application);
@@ -37,7 +40,14 @@ public class ListViewModel extends AndroidViewModel {
 
     public void refresh() {
        // fetchFromRemote();
-        fetchFromDatabase();
+        long updateTime = prefHelper.getUpdateTime();
+        long currentTime = System.nanoTime();
+        if(updateTime != 0 && currentTime-updateTime< refreshTime){
+            fetchFromDatabase();
+        } else{
+            fetchFromRemote();
+        }
+
 
 
     }
@@ -112,6 +122,7 @@ private void dogsRetrieved(List<DogBreed> dogList){
         @Override
         protected void onPostExecute(List<DogBreed> dogBreeds) {
             dogsRetrieved(dogBreeds);
+            prefHelper.saveUpdateTime(System.nanoTime());
         }
     }
     private class RetrieveDogsTask extends AsyncTask<Void,Void, List<DogBreed>>{
