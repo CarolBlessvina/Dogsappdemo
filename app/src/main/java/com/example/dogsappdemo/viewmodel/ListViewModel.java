@@ -39,18 +39,21 @@ public class ListViewModel extends AndroidViewModel {
     }
 
     public void refresh() {
-       // fetchFromRemote();
+        // fetchFromRemote();
         long updateTime = prefHelper.getUpdateTime();
         long currentTime = System.nanoTime();
-        if(updateTime != 0 && currentTime-updateTime< refreshTime){
+        if (updateTime != 0 && currentTime - updateTime < refreshTime) {
             fetchFromDatabase();
-        } else{
+        } else {
+            fetchFromRemote();
+        }
+    }
+      public void refreshBypassCache()
+    {
             fetchFromRemote();
         }
 
 
-
-    }
     private void fetchFromDatabase(){
         loading.setValue(true);
         retrieveTask = new RetrieveDogsTask();
