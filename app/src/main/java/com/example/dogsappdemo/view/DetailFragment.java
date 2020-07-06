@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import android.telecom.Call;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.example.dogsappdemo.R;
 import com.example.dogsappdemo.model.DogBreed;
+import com.example.dogsappdemo.util.Util;
 import com.example.dogsappdemo.viewmodel.DetailViewModel;
 
 import butterknife.BindView;
@@ -62,18 +64,21 @@ public class DetailFragment extends Fragment {
             doguuid = DetailFragmentArgs.fromBundle(getArguments()).getDoguuid();
         }
         viewModel = ViewModelProviders.of(this).get(DetailViewModel.class);
-        viewModel.fetch();
+        viewModel.fetch(doguuid);
         observeViewModel();
 
     }
 
-    private void observeViewModel(){
+    private void observeViewModel() {
         viewModel.dogLiveData.observe(this, dogBreed -> {
-            if(dogBreed != null && dogBreed instanceof DogBreed ){
+            if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null) {
                 dogName.setText(dogBreed.dogBreed);
                 dogPurpose.setText(dogBreed.bredFor);
                 dogTemperament.setText(dogBreed.temperament);
                 lifeSpan.setText(dogBreed.lifeSpan);
+                if (dogBreed.imageUrl != null) {
+                    Util.loadImage(dogImage, dogBreed.imageUrl, new CircularProgressDrawable(getContext()));
+                }
             }
         });
     }
