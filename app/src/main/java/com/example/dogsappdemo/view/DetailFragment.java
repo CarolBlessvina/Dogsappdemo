@@ -8,17 +8,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.palette.graphics.Palette;
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import android.telecom.Call;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -28,11 +27,7 @@ import com.example.dogsappdemo.databinding.FragmentDetailBinding;
 import com.example.dogsappdemo.databinding.FragmentDetailBindingImpl;
 import com.example.dogsappdemo.model.DogBreed;
 import com.example.dogsappdemo.model.DogPalette;
-import com.example.dogsappdemo.util.Util;
 import com.example.dogsappdemo.viewmodel.DetailViewModel;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 
 public class DetailFragment extends Fragment {
@@ -64,6 +59,7 @@ public class DetailFragment extends Fragment {
         // Inflate the layout for this fragment
         FragmentDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_detail,container,false);
         this.binding=binding;
+        setHasOptionsMenu(true);
       //  ButterKnife.bind(this,view);
         return binding.getRoot();
 
@@ -115,5 +111,27 @@ public class DetailFragment extends Fragment {
                 });
 
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.detail_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_send_sms: {
+                Toast.makeText(getContext(),"Action send sms", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.action_share: {
+                Toast.makeText(getContext(),"Action share", Toast.LENGTH_SHORT).show();
+                break;
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
