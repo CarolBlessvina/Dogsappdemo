@@ -1,6 +1,8 @@
 package com.example.dogsappdemo.view;
 
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.palette.graphics.Palette;
 
 import android.provider.Telephony;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +42,7 @@ public class DetailFragment extends Fragment {
     private int doguuid;
     private DetailViewModel viewModel;
     private FragmentDetailBinding binding;
-    private Boolean sendSmsStarted =false;
+    private Boolean sendSmsStarted = false;
     private DogBreed currentDog;
 
    /* @BindView(R.id.dogImage)
@@ -64,11 +67,11 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        FragmentDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_detail,container,false);
+        FragmentDetailBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false);
 
-        this.binding=binding;
+        this.binding = binding;
         setHasOptionsMenu(true);
-      //  ButterKnife.bind(this,view);
+        //  ButterKnife.bind(this,view);
         return binding.getRoot();
 
     }
@@ -90,27 +93,27 @@ public class DetailFragment extends Fragment {
             if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null) {
                 currentDog = dogBreed;
                 binding.setDog(dogBreed);
-                if (dogBreed.imageUrl != null)
-                {
+                if (dogBreed.imageUrl != null) {
                     setupBackgroundColor(dogBreed.imageUrl);
                 }
             }
 
         });
     }
-    private void setupBackgroundColor(String url){
+
+    private void setupBackgroundColor(String url) {
         Glide.with(this)
                 .asBitmap()
-               .load(url)
+                .load(url)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         Palette.from(resource)
-                        .generate(palette -> {
-                           int intColor = palette.getLightMutedSwatch().getRgb();
-                            DogPalette myPalette = new DogPalette(intColor);
-                            binding.setPalette(myPalette);
-                        });
+                                .generate(palette -> {
+                                    int intColor = palette.getLightMutedSwatch().getRgb();
+                                    DogPalette myPalette = new DogPalette(intColor);
+                                    binding.setPalette(myPalette);
+                                });
                     }
 
                     @Override
@@ -125,21 +128,26 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.detail_menu,menu);
+        inflater.inflate(R.menu.detail_menu, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_send_sms: {
-              if(!sendSmsStarted){
-                  sendSmsStarted =true;
-                  ((MainActivity) getActivity()).checkSmsPermission();
-              }
+                if (!sendSmsStarted) {
+                    sendSmsStarted = true;
+                    ((MainActivity) getActivity()).checkSmsPermission();
+                }
                 break;
             }
             case R.id.action_share: {
-                Toast.makeText(getContext(),"Action share", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "check out this dog breed ");
+                intent.putExtra(Intent.EXTRA_TEXT, currentDog.dogBreed + " bred for" + currentDog.bredFor);
+                intent.putExtra(Intent.EXTRA_STREAM, currentDog.imageUrl);
+                startActivity(Intent.createChooser(intent, "Share With "));
                 break;
             }
 
@@ -147,11 +155,11 @@ public class DetailFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onPermissionResult(Boolean permissionGranted){
-   // sendSmsStarted = false;
-        if(isAdded() && sendSmsStarted && permissionGranted){
-            SmsInfo smsInfo = new SmsInfo("",currentDog.dogBreed +" bred for"+currentDog.bredFor, currentDog.imageUrl);
-            SendSmsDialogBinding  dialogBinding =DataBindingUtil.inflate(
+    public void onPermissionResult(Boolean permissionGranted) {
+        // sendSmsStarted = false;
+        if (isAdded() && sendSmsStarted && permissionGranted) {
+            SmsInfo smsInfo = new SmsInfo("", currentDog.dogBreed + " bred for" + currentDog.bredFor, currentDog.imageUrl);
+            SendSmsDialogBinding dialogBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(getContext()),
                     R.layout.send_sms_dialog,
                     null,
@@ -160,20 +168,24 @@ public class DetailFragment extends Fragment {
             new AlertDialog.Builder(getContext())
                     .setView(dialogBinding.getRoot())
                     .setPositiveButton("Send SMS", ((dialog, which) -> {
-                       if(!dialogBinding.smsDestination.getText().toString().isEmpty()){
-                           smsInfo.to = dialogBinding.smsDestination.getText().toString();
-                          sendSms(smsInfo);
-                       }
+                        if (!dialogBinding.smsDestination.getText().toString().isEmpty()) {
+                            smsInfo.to = dialogBinding.smsDestination.getText().toString();
+                            sendSms(smsInfo);
+                        }
 
                     }))
-                    .setNegativeButton("cancel", ((dialogInterface, i) -> {}))
+                    .setNegativeButton("cancel", ((dialogInterface, i) -> {
+                    }))
                     .show();
             sendSmsStarted = false;
             dialogBinding.setSmsInfo(smsInfo);
         }
     }
-    private void sendSms(SmsInfo smsInfo)
-    {
 
+    private void sendSms(SmsInfo smsInfo) {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(getContext(), 0, intent, 0);
+        SmsManager smsManager = SmsManager.getDefault();
+        smsManager.sendTextMessage(smsInfo.to, null, smsInfo.text, pi, null);
     }
 }
