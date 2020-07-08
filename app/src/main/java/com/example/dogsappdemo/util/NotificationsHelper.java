@@ -43,7 +43,7 @@ public class NotificationsHelper {
                  .setSmallIcon(R.drawable.dog_icon)
                 .setLargeIcon(icon)
                 .setContentTitle("Dogs retrieved")
-                .setContentText("this is to inform thtt dog info has been retrieved")
+                .setContentText("this is to inform that dog info has been retrieved")
                 .setStyle(
                         new NotificationCompat.BigPictureStyle()
                         .bigPicture(icon)

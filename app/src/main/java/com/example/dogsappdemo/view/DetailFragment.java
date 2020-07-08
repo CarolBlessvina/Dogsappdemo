@@ -1,16 +1,19 @@
 package com.example.dogsappdemo.view;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.palette.graphics.Palette;
 
+import android.provider.Telephony;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,8 +28,10 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.dogsappdemo.R;
 import com.example.dogsappdemo.databinding.FragmentDetailBinding;
 import com.example.dogsappdemo.databinding.FragmentDetailBindingImpl;
+import com.example.dogsappdemo.databinding.SendSmsDialogBinding;
 import com.example.dogsappdemo.model.DogBreed;
 import com.example.dogsappdemo.model.DogPalette;
+import com.example.dogsappdemo.model.SmsInfo;
 import com.example.dogsappdemo.viewmodel.DetailViewModel;
 
 
@@ -34,6 +39,8 @@ public class DetailFragment extends Fragment {
     private int doguuid;
     private DetailViewModel viewModel;
     private FragmentDetailBinding binding;
+    private Boolean sendSmsStarted =false;
+    private DogBreed currentDog;
 
    /* @BindView(R.id.dogImage)
     ImageView dogImage;
@@ -58,6 +65,7 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FragmentDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.fragment_detail,container,false);
+
         this.binding=binding;
         setHasOptionsMenu(true);
       //  ButterKnife.bind(this,view);
@@ -80,6 +88,7 @@ public class DetailFragment extends Fragment {
     private void observeViewModel() {
         viewModel.dogLiveData.observe(this, dogBreed -> {
             if (dogBreed != null && dogBreed instanceof DogBreed && getContext() != null) {
+                currentDog = dogBreed;
                 binding.setDog(dogBreed);
                 if (dogBreed.imageUrl != null)
                 {
@@ -123,7 +132,10 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_send_sms: {
-                Toast.makeText(getContext(),"Action send sms", Toast.LENGTH_SHORT).show();
+              if(!sendSmsStarted){
+                  sendSmsStarted =true;
+                  ((MainActivity) getActivity()).checkSmsPermission();
+              }
                 break;
             }
             case R.id.action_share: {
@@ -133,5 +145,35 @@ public class DetailFragment extends Fragment {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onPermissionResult(Boolean permissionGranted){
+   // sendSmsStarted = false;
+        if(isAdded() && sendSmsStarted && permissionGranted){
+            SmsInfo smsInfo = new SmsInfo("",currentDog.dogBreed +" bred for"+currentDog.bredFor, currentDog.imageUrl);
+            SendSmsDialogBinding  dialogBinding =DataBindingUtil.inflate(
+                    LayoutInflater.from(getContext()),
+                    R.layout.send_sms_dialog,
+                    null,
+                    false
+            );
+            new AlertDialog.Builder(getContext())
+                    .setView(dialogBinding.getRoot())
+                    .setPositiveButton("Send SMS", ((dialog, which) -> {
+                       if(!dialogBinding.smsDestination.getText().toString().isEmpty()){
+                           smsInfo.to = dialogBinding.smsDestination.getText().toString();
+                          sendSms(smsInfo);
+                       }
+
+                    }))
+                    .setNegativeButton("cancel", ((dialogInterface, i) -> {}))
+                    .show();
+            sendSmsStarted = false;
+            dialogBinding.setSmsInfo(smsInfo);
+        }
+    }
+    private void sendSms(SmsInfo smsInfo)
+    {
+
     }
 }
