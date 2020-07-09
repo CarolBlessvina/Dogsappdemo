@@ -32,6 +32,7 @@
             android:layout_height="match_parent"
             android:layout_weight="3"
             android:imageUrl="@{dog.imageUrl}"
+            android:scaleType="centerCrop"
             android:padding="4dp"
             android:src="@mipmap/ic_dog_icon_round" />
 
