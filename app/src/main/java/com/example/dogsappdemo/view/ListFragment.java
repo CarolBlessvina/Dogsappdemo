@@ -68,7 +68,9 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //   ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+
+     //   ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+
         //    Navigation.findNavController(view).navigate(action);
 
         // create view model
@@ -87,7 +89,9 @@ public class ListFragment extends Fragment {
         observeViewModel();
     }
     private void observeViewModel() {
-        // attach to live data
+
+       // attach to live data
+
         viewModel.dogs.observe(this, dogs -> {
             if(dogs != null && dogs instanceof List){
                 dogsList.setVisibility(View.VISIBLE);
