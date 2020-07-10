@@ -8,25 +8,32 @@
     <fragment
         android:id="@+id/listFragment"
         android:name="com.example.dogsappdemo.view.ListFragment"
-        android:label="fragment_list"
-        tools:layout="@layout/fragment_list" >
+        android:label="DogList"
+        tools:layout="@layout/fragment_list">
         <action
-            android:id="@+id/action_detail"
+            android:id="@+id/actionDetail"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_settingsFragment"
+            app:destination="@id/actionSettings" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.dogsappdemo.view.DetailFragment"
-        android:label="fragment_detail"
+        android:label="DogDetail"
 
-        tools:layout="@layout/fragment_detail" >
+        tools:layout="@layout/fragment_detail">
         <action
-            android:id="@+id/action_detailFragment_to_listFragment"
+            android:id="@+id/actionList"
             app:destination="@id/listFragment" />
         <argument
             android:name="doguuid"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/actionSettings"
+        android:name="com.example.dogsappdemo.view.SettingsFragment"
+        android:label="SettingsFragment" />
 
 </navigation>

@@ -15,6 +15,9 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.telecom.Call;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -58,24 +61,33 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, view);
+        setHasOptionsMenu(true);
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //   ListFragmentDirections.ActionDetail action = ListFragmentDirections.actionDetail();
+        //    Navigation.findNavController(view).navigate(action);
 
-//        Navigation.findNavController(view).navigate((NavDirections) action);
         // create view model
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         viewModel.refresh(); // retrieve the info from view model
 
-        dogsList.setLayoutManager( new LinearLayoutManager(getContext())); // list in linear fashion
+        dogsList.setLayoutManager(new LinearLayoutManager(getContext())); // list in linear fashion
         dogsList.setAdapter(dogsListAdapter);
+        refreshLayout.setOnRefreshListener(() -> {
+            dogsList.setVisibility(View.GONE);
+            listError.setVisibility(View.GONE);
+            loadingView.setVisibility(View.VISIBLE);
+            viewModel.refreshBypassCache();
+            refreshLayout.setRefreshing(false);
+        });
         observeViewModel();
     }
     private void observeViewModel() {
-       // attach to live data
+        // attach to live data
         viewModel.dogs.observe(this, dogs -> {
             if(dogs != null && dogs instanceof List){
                 dogsList.setVisibility(View.VISIBLE);
@@ -101,4 +113,23 @@ public class ListFragment extends Fragment {
             }
         });
     }
+  /* @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.list_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.actionSettings: {
+                if(isAdded()){
+                    Navigation.findNavController(getView()).navigate(ListFragmentDirections.actionSettings());
+                }
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+*/
 }
