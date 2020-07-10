@@ -2,6 +2,7 @@ package com.example.dogsappdemo.view;
 
 import android.os.Bundle;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -48,6 +49,10 @@ public class ListFragment extends Fragment {
     SwipeRefreshLayout refreshLayout;
 
 
+
+public class ListFragment extends Fragment {
+
+
     public ListFragment() {
 
     }
@@ -56,6 +61,7 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, view);
         return view;
@@ -70,35 +76,36 @@ public class ListFragment extends Fragment {
         viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         viewModel.refresh(); // retrieve the info from view model
 
-        dogsList.setLayoutManager( new LinearLayoutManager(getContext())); // list in linear fashion
+        dogsList.setLayoutManager(new LinearLayoutManager(getContext())); // list in linear fashion
         dogsList.setAdapter(dogsListAdapter);
         observeViewModel();
     }
+
     private void observeViewModel() {
-       // attach to live data
+        // attach to live data
         viewModel.dogs.observe(this, dogs -> {
-            if(dogs != null && dogs instanceof List){
+            if (dogs != null && dogs instanceof List) {
                 dogsList.setVisibility(View.VISIBLE);
                 dogsListAdapter.updateDogsList(dogs);
             }
 
         });
         viewModel.dogsLoadError.observe(this, isError -> {
-            if(isError != null && isError instanceof Boolean){
+            if (isError != null && isError instanceof Boolean) {
                 listError.setVisibility(isError ? View.VISIBLE : View.GONE);
 
             }
         });
         viewModel.loading.observe(this, isLoading -> {
-            if(isLoading != null && isLoading instanceof Boolean){
+            if (isLoading != null && isLoading instanceof Boolean) {
                 loadingView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                if(isLoading)
-                {
+                if (isLoading) {
                     listError.setVisibility(View.GONE);
                     dogsList.setVisibility(View.GONE);
                 }
 
             }
         });
+
     }
 }
