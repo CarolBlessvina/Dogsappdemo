@@ -53,7 +53,7 @@ public class ListFragment extends Fragment {
 
 
 
-public class ListFragment extends Fragment {
+
 
 
     public ListFragment() {

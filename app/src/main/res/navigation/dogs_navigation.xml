@@ -37,9 +37,5 @@
         android:name="com.example.dogsappdemo.view.SettingsFragment"
         android:label="SettingsFragment" />
 
-        <action
-            android:id="@+id/action_list"
-            app:destination="@id/listFragment" />
-    </fragment>
 
 </navigation>
